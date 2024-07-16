@@ -42,7 +42,7 @@ void uuid_generate_v7(uuid_t out) {
   out[5] = ms >> 0;
   out[6] = subsec >> 16 | 0x70; // version
   out[7] = subsec >> 8;
-  out[8] = subsec >> 2 & 0x3F | 0x80; // variant
+  out[8] = (subsec >> 2 & 0x3F) | 0x80; // variant
   getentropy(out + 9, 7);
-  out[9] = out[9] & 0x3F | subsec << 6;
+  out[9] = (out[9] & 0x3F) | subsec << 6;
 }
