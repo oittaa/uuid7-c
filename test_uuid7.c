@@ -1,4 +1,4 @@
-#include "src/uuid7.h"
+#include "uuid7.h"
 
 #include <assert.h>
 #include <stdio.h>

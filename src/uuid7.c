@@ -4,12 +4,6 @@
 #include <stdio.h>
 #include <sys/random.h>
 #include <time.h>
-#include <sys/types.h>
-
-static void __uuid_set_variant_and_version(uuid_t uuid, int version) {
-  uuid[6] = (uuid[6] & 0xf) | version << 4;
-  uuid[8] = (uuid[8] & 0x3F) | 0x80;
-}
 
 void uuid_to_string(const uuid_t uuid, char *out) {
   static char const fmt[16] = "0123456789abcdef";
@@ -46,10 +40,9 @@ void uuid_generate_v7(uuid_t out) {
   out[3] = ms >> 16;
   out[4] = ms >> 8;
   out[5] = ms >> 0;
-  out[6] = subsec >> 16;
+  out[6] = subsec >> 16 | 0x70; // version
   out[7] = subsec >> 8;
-  out[8] = subsec >> 2;
+  out[8] = subsec >> 2 & 0x3F | 0x80; // variant
   getentropy(out + 9, 7);
-  out[9] = (out[9] & 0x3F) | subsec << 6;
-  __uuid_set_variant_and_version(out, 7);
+  out[9] = out[9] & 0x3F | subsec << 6;
 }
