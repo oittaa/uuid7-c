@@ -1,5 +1,6 @@
 # uuid7
 A C library for the new time-based UUID suited for a database key.
+[![codecov](https://codecov.io/github/oittaa/uuid7-c/graph/badge.svg?token=XXQO298RMF)](https://codecov.io/github/oittaa/uuid7-c)
 
 ### Usage
 ```c
