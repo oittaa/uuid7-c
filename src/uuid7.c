@@ -1,5 +1,6 @@
 #include "uuid7.h"
 
+#include <stdint.h>
 #include <stdio.h>
 #include <sys/random.h>
 #include <time.h>
