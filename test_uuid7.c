@@ -1,12 +1,30 @@
 #include "uuid7.h"
 
 #include <assert.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
+#define BILLION 1000000000LLU
 #define N_SAMPLES 100000
 static char samples[N_SAMPLES][40];
+static uint64_t elapsed;
+
+static void toggle_timer() {
+  static size_t started = 0;
+  static struct timespec start, end;
+  if (started) {
+    clock_gettime(CLOCK_MONOTONIC, &end);
+    elapsed =
+        BILLION * (end.tv_sec - start.tv_sec) + end.tv_nsec - start.tv_nsec;
+    started = 0;
+  } else {
+    clock_gettime(CLOCK_MONOTONIC, &start);
+    started = 1;
+  }
+}
 
 void setup(void) {
   uuid_t uuid;
@@ -44,10 +62,17 @@ void test_order(void) {
 int main(void) {
   setup();
 
+  toggle_timer();
   test_format();
-  fprintf(stderr, "  %s: ok\n", "test_format");
+  toggle_timer();
+  fprintf(stderr, "  %s: ok  %llu.%09llus\n", "test_format", elapsed / BILLION,
+          elapsed % BILLION);
+
+  toggle_timer();
   test_order();
-  fprintf(stderr, "  %s: ok\n", "test_order");
+  toggle_timer();
+  fprintf(stderr, "  %s: ok  %llu.%09llus\n", "test_order", elapsed / BILLION,
+          elapsed % BILLION);
 
   return EXIT_SUCCESS;
 }
