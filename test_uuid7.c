@@ -6,7 +6,7 @@
 #include <string.h>
 #include <time.h>
 
-#define BILLION 1000000000L
+#define BILLION 1000000000LLU
 #define N_SAMPLES 100000
 static char samples[N_SAMPLES][40];
 static uint64_t elapsed;
