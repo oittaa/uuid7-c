@@ -4,8 +4,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/random.h>
-#include <time.h>
 
 #define N_SAMPLES 100000
 static char samples[N_SAMPLES][40];

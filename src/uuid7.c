@@ -1,7 +1,8 @@
 #include "uuid7.h"
 
+#include <err.h>
 #include <stdint.h>
-#include <stdio.h>
+#include <stdlib.h>
 #include <sys/random.h>
 #include <time.h>
 
@@ -26,7 +27,8 @@ void uuid_generate_v7(uuid_t out) {
   uint64_t ms, subsec, ns;
   static uint64_t ns_prev = 0;
 
-  clock_gettime(CLOCK_REALTIME, &tv);
+  if (getentropy(out + 9, 7) || clock_gettime(CLOCK_REALTIME, &tv))
+    err(EXIT_FAILURE, NULL);
   ns = tv.tv_sec * 1000000000ULL + tv.tv_nsec;
   if (ns <= ns_prev)
     ns = ns_prev + 1;
@@ -43,6 +45,5 @@ void uuid_generate_v7(uuid_t out) {
   out[6] = subsec >> 16 | 0x70; // version
   out[7] = subsec >> 8;
   out[8] = (subsec >> 2 & 0x3F) | 0x80; // variant
-  getentropy(out + 9, 7);
   out[9] = (out[9] & 0x3F) | subsec << 6;
 }
