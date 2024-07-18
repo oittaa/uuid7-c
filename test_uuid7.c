@@ -60,7 +60,12 @@ void test_order(void) {
 }
 
 int main(void) {
+  printf("### TEST_UUID7\n");
+  toggle_timer();
   setup();
+  toggle_timer();
+  fprintf(stderr, "  %s: ok  %llu.%09llus\n", "setup", elapsed / BILLION,
+          elapsed % BILLION);
 
   toggle_timer();
   test_format();
