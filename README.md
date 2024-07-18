@@ -1,5 +1,6 @@
 # uuid7
 A C library for the new time-based UUID suited for a database key.
+
 [![codecov](https://codecov.io/github/oittaa/uuid7-c/graph/badge.svg?token=XXQO298RMF)](https://codecov.io/github/oittaa/uuid7-c)
 
 ### Usage
@@ -12,4 +13,4 @@ uuid_to_string(uuid, buf);
 printf("%s\n", buf);
 ```
 
-`uuid_generate_v7()` is not thread-safe.
+`uuid_generate_v7()` is thread-safe.

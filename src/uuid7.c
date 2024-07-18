@@ -1,10 +1,13 @@
 #include "uuid7.h"
 
 #include <err.h>
+#include <pthread.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <sys/random.h>
 #include <time.h>
+
+pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
 
 void uuid_to_string(const uuid_t uuid, char *out) {
   static char const fmt[16] = "0123456789abcdef";
@@ -31,14 +34,16 @@ void uuid_generate_v7(uuid_t out) {
   if (getentropy(out + 9, 7) || clock_gettime(CLOCK_REALTIME, &tv))
     err(EXIT_FAILURE, NULL);
   ns = tv.tv_sec * 1000000000ULL + tv.tv_nsec;
+  pthread_mutex_lock(&lock);
   if (ns <= ns_prev) {
     ns = ns_prev + 1;
   } else if (ns - ns_prev > 1000000) {
     jitter = out[9] >> 7;
   }
   ns_prev = ns;
-  ms = ns / 1000000ULL;
   subsec = (ns % 1000000ULL) * 1048576 / 1000000 + jitter;
+  pthread_mutex_unlock(&lock);
+  ms = ns / 1000000ULL;
 
   out[0] = ms >> 40;
   out[1] = ms >> 32;
