@@ -27,30 +27,30 @@ void uuid_to_string(const uuid_t uuid, char *out) {
 
 void uuid_generate_v7(uuid_t out) {
   struct timespec tv;
-  uint64_t ms, subsec, ns;
-  static uint64_t ns_prev = 0;
+  uint64_t subsec, ts;
+  static uint64_t ts_prev = 0;
   static unsigned char jitter = 0;
 
   if (getentropy(out + 9, 7) || clock_gettime(CLOCK_REALTIME, &tv))
     err(EXIT_FAILURE, NULL);
-  ns = tv.tv_sec * 1000000000ULL + tv.tv_nsec;
+  ts = tv.tv_sec * 1000000000ULL + tv.tv_nsec;
   pthread_mutex_lock(&lock);
-  if (ns <= ns_prev) {
-    ns = ns_prev + 1;
-  } else if (ns - ns_prev > 1000000) {
+  if (ts <= ts_prev) {
+    ts = ts_prev + 1;
+  } else if (ts - ts_prev > 1000000) {
     jitter = out[9] >> 7;
   }
-  ns_prev = ns;
-  subsec = (ns % 1000000ULL) * 1048576 / 1000000 + jitter;
+  ts_prev = ts;
+  subsec = (ts % 1000000ULL << 20) / 1000000 + jitter;
   pthread_mutex_unlock(&lock);
-  ms = ns / 1000000ULL;
+  ts /= 1000000ULL; // unix_ts_ms
 
-  out[0] = ms >> 40;
-  out[1] = ms >> 32;
-  out[2] = ms >> 24;
-  out[3] = ms >> 16;
-  out[4] = ms >> 8;
-  out[5] = ms >> 0;
+  out[0] = ts >> 40;
+  out[1] = ts >> 32;
+  out[2] = ts >> 24;
+  out[3] = ts >> 16;
+  out[4] = ts >> 8;
+  out[5] = ts >> 0;
   out[6] = subsec >> 16 | 0x70; // version
   out[7] = subsec >> 8;
   out[8] = (subsec >> 2 & 0x3F) | 0x80; // variant
