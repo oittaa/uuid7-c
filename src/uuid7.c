@@ -31,19 +31,19 @@ void uuid_generate_v7(uuid_t out) {
   static uint64_t ns_prev = 0;
   static unsigned char jitter = 0;
 
-  pthread_mutex_lock(&lock);
   if (getentropy(out + 9, 7) || clock_gettime(CLOCK_REALTIME, &tv))
     err(EXIT_FAILURE, NULL);
   ns = tv.tv_sec * 1000000000ULL + tv.tv_nsec;
+  pthread_mutex_lock(&lock);
   if (ns <= ns_prev) {
     ns = ns_prev + 1;
   } else if (ns - ns_prev > 1000000) {
     jitter = out[9] >> 7;
   }
   ns_prev = ns;
+  subsec = (ns % 1000000ULL) * 1048576 / 1000000 + jitter;
   pthread_mutex_unlock(&lock);
   ms = ns / 1000000ULL;
-  subsec = (ns % 1000000ULL) * 1048576 / 1000000 + jitter;
 
   out[0] = ms >> 40;
   out[1] = ms >> 32;
