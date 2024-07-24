@@ -60,7 +60,7 @@ void test_order(void) {
 }
 
 int main(void) {
-  printf("### TEST_UUID7\n");
+  fprintf(stderr, "### TEST_UUID7\n");
   toggle_timer();
   setup();
   toggle_timer();

@@ -71,12 +71,12 @@ int main(void) {
   pthread_t tid[N_THREADS];
   int err, i;
 
-  printf("### TEST_THREADS\n");
+  fprintf(stderr, "### TEST_THREADS\n");
   toggle_timer();
   for (i = 0; i < N_THREADS; i++) {
     err = pthread_create(&tid[i], NULL, &setup, (void *)(intptr_t)i);
     if (err != 0)
-      printf("\ncan't create thread :[%s]", strerror(err));
+      fprintf(stderr, "can't create thread :[%s]\n", strerror(err));
   }
   for (i = 0; i < N_THREADS; i++)
     pthread_join(tid[i], NULL);
